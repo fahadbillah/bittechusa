@@ -1,0 +1,175 @@
+<project name="bharahobe" default="build" basedir=".">
+	<description>
+		Bharahobe build.xml
+	</description>
+	<!-- set global properties for this build -->
+	<property name="app" location="application"/>
+	<property name="assets" location="assets"/>
+	<property name="build" location="build"/>
+	<property name="docs" location="docs"/>
+
+	<target name="build" depends="init, devmig"></target>
+	
+	<target name="load" description="Loading properties">
+		<loadproperties>
+	      <file file="build.properties"/>
+	    </loadproperties>
+	</target>
+
+	<target name="create" description="Create directories and files">
+		<!-- Create the build directory structure used by compile -->
+		
+		<mkdir dir="${basedir}/build/phploc"/>
+		<touch file="${basedir}/build/phploc/phploc.csv"/>
+		<touch file="${basedir}/build/phploc/phploc.xml"/>
+
+		<mkdir dir="${basedir}/build/phpcs"/>
+		<touch file="${basedir}/build/phpcs/checkstyle.xml"/>
+		<touch file="${basedir}/build/phpcs/summary.txt"/>
+		<touch file="${basedir}/build/phpcs/full.txt"/>
+		<touch file="${basedir}/build/phpcs/report.diff"/>
+
+
+		<mkdir dir="${basedir}/build/phpmd"/>
+		<touch file="${basedir}/build/phpmd/pmd.xml"/>
+
+		<mkdir dir="${basedir}/build/pdepend"/>
+		<touch file="${basedir}/build/pdepend/summary.xml"/>
+		<touch file="${basedir}/build/pdepend/jdepend.svg"/>
+		<touch file="${basedir}/build/pdepend/pyramid.svg"/>
+
+
+		<mkdir dir="${basedir}/build/phpcpd"/>
+		<touch file="${basedir}/build/phpcpd/pmd-cpd.xml"/>
+
+		<mkdir dir="${docs}/api"/>
+	</target>
+
+	<target name="replace" description="Replace string and modify access information">
+		<replaceregexp file="${app}/config/config.php"
+               match="\$config\[\'base_url\'\] = '(.*)'"
+               replace="$config['base_url'] = '${base_url}'"
+               byline="true"
+		/>
+		<replaceregexp file="${app}/config/database.php"
+               match="'hostname'(.*)=>(.*)'(.*)'"
+               replace="'hostname' => '${hostname}'"
+               byline="true"
+		/>
+		<replaceregexp file="${app}/config/database.php"
+               match="'database'(.*)=>(.*)'(.*)'"
+               replace="'database' => '${database}'"
+               byline="true"
+		/>
+		<replaceregexp file="${app}/config/database.php"
+               match="'username'(.*)=>(.*)'(.*)'"
+               replace="'username' => '${username}'"
+               byline="true"
+		/>
+		<replaceregexp file="${app}/config/database.php"
+               match="'password'(.*)=>(.*)'(.*)'"
+               replace="'password' => '${password}'"
+               byline="true"
+		/>
+		<replaceregexp file="${app}/config/database.php"
+               match="'dbprefix'(.*)=>(.*)'(.*)'"
+               replace="'dbprefix' => '${dbprefix}'"
+               byline="true"
+		/>
+	</target>
+
+	<target name="init" depends="load, create, replace">
+		<!-- Create the time stamp -->
+		<tstamp/>
+	</target>
+
+	<target name="devmig"> 
+		<exec executable="php">
+			<arg value="vendor/bin/phinx"/>
+			<arg value="migrate"/>
+			<arg value="-e"/>
+			<arg value="developement"/>
+		</exec>
+	</target>   
+
+	<target name="devprod"> 
+		<exec executable="vendor/robmorgan/phinx/bin/phinx">
+			<arg value="migrate"/>
+			<arg value="-e"/>
+			<arg value="production"/>
+		</exec>
+	</target>   
+
+	<target name="phploc" description="Run phploc">
+		<exec executable="./vendor/phploc/phploc/composer/bin/phploc">
+			<arg value="--log-csv"/>
+			<arg path="${basedir}/build/phploc/phploc.csv"/>
+			<arg value="--log-xml"/>
+			<arg path="${basedir}/build/phploc/phploc.xml"/>
+			<arg path="${basedir}/application/controllers"/>
+			<arg path="${basedir}/application/models"/>
+		</exec>
+	</target>
+
+	<target name="phpmd" description="Perform project mess detection using PHPMD and print human readable output. Intended for usage on the command line before committing.">
+		<exec executable="./vendor/phpmd/phpmd/src/bin/phpmd">
+
+			<arg line="${basedir}/application/
+			xml
+			cleancode,unusedcode,codesize,design,naming,controversial
+			--reportfile ${basedir}/build/phpmd/pmd.xml
+			" />
+		</exec>
+	</target>
+
+	<target name="phpcbf">
+		<exec executable="./vendor/squizlabs/php_codesniffer/scripts/phpcbf">
+			<arg value="--ignore=${basedir}/application/config/" />
+			<arg path="${basedir}/application/" />
+		</exec>
+	</target>
+
+	<target name="phpcs">
+		<exec executable="./vendor/squizlabs/php_codesniffer/scripts/phpcs">
+			<arg value="--report-checkstyle=${basedir}/build/phpcs/checkstyle.xml" />
+			<arg value="--report-summary=${basedir}/build/phpcs/summary.txt" />
+			<arg value="--report-full=${basedir}/build/phpcs/full.txt" />
+			<arg value="--report-diff=${basedir}/build/phpcs/report.diff" />
+			<arg value="--standard=PSR2" />
+			<arg value="--ignore=${basedir}/application/config/" />
+			<arg path="${basedir}/application/" />
+		</exec>
+	</target>
+
+
+	<target name="phpcpd"
+		description="Generate pmd-cpd.xml using PHPCPD">
+		<exec executable="./vendor/sebastian/phpcpd/composer/bin/phpcpd">
+			<arg line=" --log-pmd build/phpcpd/pmd-cpd.xml application/controllers 
+				--log-pmd build/phpcpd/pmd-cpd.xml application/models --log-pmd build/phpcpd/pmd-cpd.xml application/helpers" />
+		</exec>
+	</target>
+
+
+	<target name="phpdoc">
+		<exec executable="./vendor/phpdocumentor/phpdocumentor/bin/phpdoc">  
+			<arg line="-d application/ -t docs/api/" />  
+		</exec>
+	</target>
+
+	<target name="pdepend">
+		<exec executable="./vendor/pdepend/pdepend/src/bin/pdepend">
+			<arg value="--summary-xml=build/pdepend/summary.xml" />
+			<arg value="--jdepend-chart=build/pdepend/jdepend.svg" />
+			<arg value="--overview-pyramid=build/pdepend/pyramid.svg" />
+			<arg path="${basedir}/application/" />
+		</exec>
+	</target>
+
+	<target name="clean"
+		description="clean up">
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build}"/>
+		<delete dir="${docs}"/>
+	</target>
+</project>

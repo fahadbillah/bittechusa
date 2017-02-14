@@ -8,11 +8,11 @@ application/logs/*
 !application/logs/index.html
 !application/logs/.htaccess
 
-user_guide_src/build/*
-user_guide_src/cilexer/build/*
-user_guide_src/cilexer/dist/*
-user_guide_src/cilexer/pycilexer.egg-info/*
-/vendor/
+composer.lock
+
+vendor/
+node_modules/
+bower_components/
 
 # IDE Files
 #-------------------------
@@ -26,7 +26,13 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 *.sublime-workspace
 *.sublime-project
 
-
-bower_components
-node_modules
-uploads/
+application/config/config.php
+application/config/database.php
+test.properties
+prod.properties
+dev.properties
+phinx.yml
+user_guide/*
+uploads/*
+build/*
+docs/*

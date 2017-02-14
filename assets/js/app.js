@@ -1,16 +1,10 @@
 var FLYERBD = angular.module('FLYERBD', [
 	'ngRoute',
 	'ngCookies',
-	'oc.lazyLoad',
-	'ngFacebook'
+	'oc.lazyLoad'
 	]);
 
-FLYERBD.constant('FACEBOOK_APP_ID', '326474321078728');
-
-FLYERBD.config(['$routeProvider','$facebookProvider','FACEBOOK_APP_ID','$locationProvider', function ($routeProvider,$facebookProvider,facebookAppId,$locationProvider) {
-
-	$facebookProvider.setAppId(facebookAppId);
-	$facebookProvider.setPermissions("email,user_friends");
+FLYERBD.config(['$routeProvider','$locationProvider', function ($routeProvider,$locationProvider) {
 
 	$routeProvider
 	.when('/', {
@@ -106,8 +100,6 @@ FLYERBD.config(['$routeProvider','$facebookProvider','FACEBOOK_APP_ID','$locatio
 		}
 	})
 	.otherwise({ redirectTo: '/error/404' });
-
-	$locationProvider.html5Mode(true);
 }]);
 
 FLYERBD.run(['$rootScope','UserService', function($rootScope,UserService) {
@@ -115,15 +107,6 @@ FLYERBD.run(['$rootScope','UserService', function($rootScope,UserService) {
 	UserService.init(); // every time page refreshed it will check ci backend and if logged_in set user data in angular frontend
 
 	$rootScope.toaster = null; // toaster variable reachable from everywhere
-
-	(function(){
-		if (document.getElementById('facebook-jssdk')) {return;}
-		var firstScriptElement = document.getElementsByTagName('script')[0];
-		var facebookJS = document.createElement('script'); 
-		facebookJS.id = 'facebook-jssdk';
-		facebookJS.src = '//connect.facebook.net/en_US/all.js';
-		firstScriptElement.parentNode.insertBefore(facebookJS, firstScriptElement);
-	}());
 }])
 
 FLYERBD.service('UserService', ['$rootScope', '$http', function ($rootScope, $http) {
@@ -136,7 +119,7 @@ FLYERBD.service('UserService', ['$rootScope', '$http', function ($rootScope, $ht
 					method: 'get',
 					url: 'api/login/status'
 				})
-				.success(function(data) {
+				.then(function(data) {
 					console.log(data);
 					if (!!data.logged_in) {
 						that._user = data;
@@ -144,8 +127,7 @@ FLYERBD.service('UserService', ['$rootScope', '$http', function ($rootScope, $ht
 					} else {
 						that.destroy();
 					}
-				})
-				.error(function(data) {
+				},function(data) {
 					console.log('user not logged in');
 				});
 			}

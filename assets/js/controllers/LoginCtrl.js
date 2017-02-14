@@ -1,5 +1,5 @@
 angular.module('FLYERBD')
-.controller('LoginCtrl', ['$rootScope','$scope','$http','$routeParams','UserService','$location','$facebook','FACEBOOK_APP_ID','$cookies','Toaster', function ($rootScope,$scope,$http,$routeParams,UserService,$location,$facebook,facebookAppId,$cookies,Toaster) {
+.controller('LoginCtrl', ['$rootScope','$scope','$http','$routeParams','UserService','$location','$cookies','Toaster', function ($rootScope,$scope,$http,$routeParams,UserService,$location,$cookies,Toaster) {
 
 	$rootScope.toaster = Toaster;
 
@@ -37,41 +37,6 @@ angular.module('FLYERBD')
 		})
 		.error(function(data) {
 			console.log(data);
-		});
-	};
-
-	$scope.facebookLogin = function() {
-		$facebook.login().then(function(response) {
-			console.log(response);
-			$cookies.put('fbsr_'+facebookAppId, response.authResponse.signedRequest);
-
-			$http({
-				method: 'post',
-				data: $.param({
-					signedRequest: response.authResponse.signedRequest,
-					accessToken: response.authResponse.accessToken,
-					userID: response.authResponse.userID
-				}),
-				url: 'api/registration/facebook',
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded'
-				}
-			})
-			.success(function(data) {
-				console.log(data);
-				UserService.setUserData(data.data);
-
-				$rootScope.toaster.setAlert({
-					type: data.success ? 'success' : 'error',
-					title: data.message.title,
-					description: data.message.description
-				});
-				// alert(data.message);
-				$location.path('user/'+data.data.user_id); // redirect to profile page after login
-			})
-			.error(function(data) {
-				console.log(data);
-			});
 		});
 	};
 

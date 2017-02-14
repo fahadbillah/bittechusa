@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="FLYERBD">
 <head>
-    <base href="http://localhost/flyerbd/">
-	<title>FLYERBD</title>
+	<title>Bit Tech USA</title>
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url() ?>bower_components/bootstrap/dist/css/bootstrap.css">
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url() ?>bower_components/font-awesome/css/font-awesome.css">
 	<link href="https://fonts.googleapis.com/css?family=Russo+One" rel="stylesheet">
@@ -47,8 +46,8 @@
 	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 	      <ul class="nav navbar-nav">
 	        <li><a href="<?php echo base_url() ?>" title="Home">Home <span class="sr-only">(current)</span></a></li>
-	        <li><a href="<?php echo base_url() ?>about" title="About">About</a></li>
-	        <li><a href="<?php echo base_url() ?>contact" title="Contact">Contact</a></li>
+	        <li><a href="<?php echo base_url() ?>#!/about" title="About">About</a></li>
+	        <li><a href="<?php echo base_url() ?>#!/contact" title="Contact">Contact</a></li>
 	      </ul>
 	      <form class="navbar-form navbar-left">
 	        <div class="form-group">
@@ -57,18 +56,18 @@
 	        <button type="submit" class="btn btn-default">Submit</button>
 	      </form>
 	      <ul class="nav navbar-nav navbar-right">
-	        <li ng-if="!user.logged_in" class="active"><a href="<?php echo base_url() ?>signup">Sign UP</a></li> <!-- when user logged in signup link will disappear -->
-	        <li ng-if="!user.logged_in"><a href="<?php echo base_url() ?>login">Login</a></li> <!-- when user logged in login link will also disappear -->
+	        <li ng-if="!user.logged_in" class="active"><a href="<?php echo base_url() ?>#!/signup">Sign UP</a></li> <!-- when user logged in signup link will disappear -->
+	        <li ng-if="!user.logged_in"><a href="<?php echo base_url() ?>#!/login">Login</a></li> <!-- when user logged in login link will also disappear -->
 	        
 	        <li ng-if="!!user.logged_in">
-	        	<a href="<?php echo base_url() ?>user/{{user.user_id}}" style="padding: 0px;">
+	        	<a href="<?php echo base_url() ?>#!/user/{{user.user_id}}" style="padding: 0px;">
 	        		<img ng-if="!user.user_profile_pic" class="img-circle" src="http://placehold.it/50" alt="">
 	        		<img ng-if="!!user.user_profile_pic" class="img-circle" ng-src="<?php echo base_url() ?>uploads/{{user.user_profile_pic | thumb}}" alt="">
 	        		{{user.user_name}}
 	        	</a>
         	</li> <!-- after user login profile link will be visible -->
 	        
-	        <li ng-if="!!user.logged_in"><a href="<?php echo base_url() ?>login?logout=true">Logout</a></li> <!-- after user login logout link will be visible -->
+	        <li ng-if="!!user.logged_in"><a href="<?php echo base_url() ?>#!/login?logout=true">Logout</a></li> <!-- after user login logout link will be visible -->
 	      </ul>
 	    </div><!-- /.navbar-collapse -->
 	  </div><!-- /.container-fluid -->
@@ -87,9 +86,7 @@
 <script src="<?php echo base_url() ?>bower_components/angular/angular.js"></script>
 <script src="<?php echo base_url() ?>bower_components/angular-route/angular-route.js"></script>
 <script src="<?php echo base_url() ?>bower_components/angular-cookies/angular-cookies.js"></script>
-<script src="<?php echo base_url() ?>bower_components/ng-facebook/ngFacebook.js"></script>
 <script src="<?php echo base_url() ?>bower_components/oclazyload/dist/ocLazyLoad.js"></script>
-<script src="<?php echo base_url() ?>bower_components/ng-facebook/ngFacebook.js"></script>
 
 <script src="<?php echo base_url() ?>assets/js/app.js"></script>
 <script src="<?php echo base_url() ?>assets/js/services/toaster.js"></script>
